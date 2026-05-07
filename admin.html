@@ -582,6 +582,7 @@ function doLogin() {
     initGrid();
     loadLocalState();
     startPoll();
+    syncFromNeon();
   } else {
     document.getElementById('login-err').textContent = 'Incorrect password.';
     setTimeout(() => document.getElementById('login-err').textContent = '', 2000);
@@ -751,7 +752,12 @@ async function syncFromNeon() {
     }
     if (map.image_url && map.image_url.length > 10) {
       loadImageFromUrl(map.image_url);
-      document.getElementById('image-url-input').value = map.image_url.startsWith('http') ? map.image_url : '';
+      const isUrl = map.image_url.startsWith('http');
+      document.getElementById('image-url-input').value = isUrl ? map.image_url : '';
+      if (isUrl) {
+        document.getElementById('current-url-text').textContent = map.image_url;
+        document.getElementById('current-url-box').style.display = 'block';
+      }
     }
     neonDonationCount = remoteCount;
     saveLocalState();
