@@ -242,7 +242,7 @@ body {
 .img-upload-area strong { display: block; font-size: 13px; color: var(--ink); margin-bottom: 4px; }
 .img-preview {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 2 / 3;
   object-fit: cover;
   border-radius: var(--r);
   display: none;
@@ -327,7 +327,7 @@ body {
 .canvas-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 2 / 3;
   border: 1px solid var(--border-strong);
   overflow: hidden;
   background: #111;
@@ -559,8 +559,8 @@ body {
 // ── CONFIG — edit these defaults ──────────────────────────────────────────
 const ADMIN_PASSWORD = 'inthefield2025'; // Change this!
 const POLL_INTERVAL_MS = 8000;
-const COLS = 10;
-const ROWS = 10;
+const COLS = 8;
+const ROWS = 12;
 const TOTAL_TILES = COLS * ROWS;
 
 // ── State ─────────────────────────────────────────────────────────────────
@@ -661,7 +661,7 @@ function updateStats() {
 // ── Neon API (via Vercel proxy) ───────────────────────────────────────────
 // Calls go to YOUR Vercel proxy URL, not Neon directly (avoids CORS).
 // Set PROXY_URL to your deployed Vercel function URL after deployment.
-const PROXY_URL = 'https://project-v5dpc.vercel.app/api/neon';
+const PROXY_URL = 'YOUR_VERCEL_URL/api/neon';
 // e.g. 'https://into-the-field-proxy.vercel.app/api/neon'
 
 function isNeonConfigured() {

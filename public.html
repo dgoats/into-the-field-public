@@ -198,7 +198,7 @@ main {
 .canvas-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 2 / 3;
   overflow: hidden;
   background: #0f0d0b;
   box-shadow: 0 0 0 1px var(--border-strong), 0 32px 80px rgba(15,13,11,0.12);
@@ -233,8 +233,8 @@ main {
 .obscured-grid {
   position: absolute; inset: 0;
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(10, 1fr);
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(12, 1fr);
   gap: 1px;
   background: #1a1612;
   pointer-events: none;
@@ -379,7 +379,7 @@ footer {
 
 <header>
   <div>
-    <div class="header-mono">2026 Mid-Year Campaign</div>
+    <div class="header-mono">Fundraiser Campaign</div>
     <div class="header-title">Into the Field — <em>Donation Tracker</em></div>
   </div>
   <div class="live-badge">
@@ -392,7 +392,7 @@ footer {
   <div class="intro">
     <p class="eyebrow">Live campaign tracker</p>
     <h1>Every donation<br><em>unveils</em> the art</h1>
-    <p>100 donors. One hidden artwork. Every gift lifts the curtain — piece by piece. Reach the goal and every donor receives an exclusive postcard print.</p>
+    <p>Help us reach 100 donations and witness Into the Field's artwork emerge — one gift at a time. Each donation reveals a new piece of the hidden image.</p>
   </div>
 
   <div class="progress-bar-wrap">
@@ -405,7 +405,7 @@ footer {
     </div>
     <div class="prog-ends">
       <span>0</span>
-      <span id="pub-goal">100 donations to fully reveal the image</span>
+      <span id="pub-goal">100 donations to fully reveal</span>
     </div>
   </div>
 
@@ -449,11 +449,11 @@ footer {
 const PROXY_URL  = 'https://project-v5dpc.vercel.app/api/neon';
 // e.g. 'https://into-the-field-proxy.vercel.app/api/neon'
 
-const DONATE_URL = 'https://wright-ingraham.org/donate';   // Replace with your donation page URL
+const DONATE_URL = '#';   // Replace with your donation page URL
 const POLL_MS    = 6000;  // Poll every 6 seconds
 // ══════════════════════════════════════════════════════════════════
 
-const COLS = 10, ROWS = 10, TOTAL_TILES = 100;
+const COLS = 8, ROWS = 12, TOTAL_TILES = 96;
 let tiles = [], tileOrder = [], revealedCount = 0, goalTotal = 100;
 let TILE_SEED = 20250101;
 let firstLoad = true;
