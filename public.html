@@ -449,7 +449,7 @@ footer {
 const PROXY_URL  = 'https://project-v5dpc.vercel.app/api/neon';
 // e.g. 'https://into-the-field-proxy.vercel.app/api/neon'
 
-const DONATE_URL = 'https://wright-ingraham.org/donate/';   // Replace with your donation page URL
+const DONATE_URL = '#';   // Replace with your donation page URL
 const POLL_MS    = 6000;  // Poll every 6 seconds
 // ══════════════════════════════════════════════════════════════════
 
@@ -603,6 +603,11 @@ function showFlash(count) {
   el.classList.add('show');
   flashTimer = setTimeout(() => el.classList.remove('show'), 4000);
 }
+
+// Init
+initGrid();
+fetchState();
+setInterval(fetchState, POLL_MS);
 
 // ── Auto-height for iFrame embedding ─────────────────────────────
 // Sends page height to parent window so the iframe resizes automatically
