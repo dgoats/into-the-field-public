@@ -431,7 +431,7 @@ footer {
 
 <footer>
   <span class="footer-note">Every gift reveals more</span>
-  <a class="donate-cta" href="#donate" id="donate-link">
+  <a class="donate-cta" href="#donate" id="donate-link" target="_blank" rel="noopener">
     Make a donation →
   </a>
   <span class="footer-note" id="footer-count">0 / 100</span>
@@ -449,7 +449,7 @@ footer {
 const PROXY_URL  = 'https://project-v5dpc.vercel.app/api/neon';
 // e.g. 'https://into-the-field-proxy.vercel.app/api/neon'
 
-const DONATE_URL = 'https://wright-ingraham.org/donate/';   // Replace with your donation page URL
+const DONATE_URL = '#';   // Replace with your donation page URL
 const POLL_MS    = 6000;  // Poll every 6 seconds
 // ══════════════════════════════════════════════════════════════════
 
@@ -604,10 +604,15 @@ function showFlash(count) {
   flashTimer = setTimeout(() => el.classList.remove('show'), 4000);
 }
 
-// Init
-initGrid();
-fetchState();
-setInterval(fetchState, POLL_MS);
+// ── Auto-height for iFrame embedding ─────────────────────────────
+// Sends page height to parent window so the iframe resizes automatically
+function sendHeight() {
+  const height = document.documentElement.scrollHeight;
+  window.parent.postMessage({ iframeHeight: height }, '*');
+}
+// Send on load and whenever content might change
+sendHeight();
+new ResizeObserver(sendHeight).observe(document.body);
 </script>
 </body>
 </html>
