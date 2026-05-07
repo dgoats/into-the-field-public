@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Into the Field Donation Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #0f0d0b;
+  --ink-mid: #3d3530;
+  --ink-soft: #7a6f67;
+  --cream: #f7f4ef;
+  --warm: #ede9e2;
+  --gold: #b8902a;
+  --gold-pale: #e8d9b5;
+  --green: #2d6a4f;
+  --green-pale: #d8ede4;
+  --red: #a33030;
+  --red-pale: #f0dada;
+  --border: rgba(180,160,130,0.22);
+  --border-strong: rgba(180,160,130,0.45);
+  --r: 3px;
+}
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* ── Login screen ── */
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 40px 24px;
+}
+.login-card {
+  background: white;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r);
+  padding: 48px 40px 40px;
+  width: 100%;
+  max-width: 380px;
+}
+.login-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.login-card h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 28px;
+  line-height: 1.2;
+}
+.login-card h1 em { font-style: italic; color: var(--gold); }
+.field { margin-bottom: 14px; }
+.field label {
+  display: block;
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+  letter-spacing: 0.04em;
+}
+.field input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--cream);
+  outline: none;
+  transition: border-color 0.18s;
+}
+.field input:focus { border-color: var(--gold); }
+.login-err {
+  font-size: 12px;
+  color: var(--red);
+  margin-bottom: 10px;
+  min-height: 18px;
+}
+.btn-full {
+  width: 100%;
+  padding: 12px;
+  background: var(--ink);
+  color: var(--cream);
+  border: none;
+  border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: background 0.18s;
+}
+.btn-full:hover { background: var(--ink-mid); }
+
+/* ── Main admin layout ── */
+#admin-screen { display: none; }
+.admin-wrap {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  background: white;
+  border-right: 1px solid var(--border);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  overflow-y: auto;
+}
+.sidebar-logo {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+.sidebar-logo span {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0;
+  color: var(--ink);
+  margin-top: 4px;
+  text-transform: none;
+}
+
+.section-label {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* Stat pills */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.stat-pill {
+  background: var(--warm);
+  border-radius: var(--r);
+  padding: 14px 16px;
+}
+.stat-pill .val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1;
+}
+.stat-pill .lbl {
+  font-size: 10px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Progress bar */
+.prog-wrap { margin-top: 4px; }
+.prog-track {
+  height: 3px;
+  background: var(--border-strong);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 8px 0 4px;
+}
+.prog-bar {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.prog-label {
+  font-size: 11px;
+  color: var(--ink-soft);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Neon config */
+.neon-config textarea, .neon-config input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-mid);
+  background: var(--cream);
+  resize: none;
+  outline: none;
+  transition: border-color 0.18s;
+}
+.neon-config textarea:focus,
+.neon-config input:focus { border-color: var(--gold); }
+.neon-config textarea { height: 70px; }
+.neon-status {
+  font-size: 11px;
+  margin-top: 6px;
+  min-height: 16px;
+}
+.neon-status.ok { color: var(--green); }
+.neon-status.err { color: var(--red); }
+
+/* Image upload */
+.img-upload-area {
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r);
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+}
+.img-upload-area:hover { border-color: var(--gold); background: var(--warm); }
+.img-upload-area input { display: none; }
+.img-upload-area p { font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
+.img-upload-area strong { display: block; font-size: 13px; color: var(--ink); margin-bottom: 4px; }
+.img-preview {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--r);
+  display: none;
+  margin-bottom: 10px;
+}
+
+/* Action buttons */
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px;
+  border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.02em;
+}
+.action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-record {
+  background: var(--ink);
+  color: var(--cream);
+  border: none;
+  font-size: 14px;
+  padding: 16px;
+}
+.btn-record:hover:not(:disabled) { background: var(--ink-mid); }
+.btn-secondary {
+  background: transparent;
+  color: var(--ink-mid);
+  border: 1px solid var(--border-strong);
+}
+.btn-secondary:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.btn-danger {
+  background: transparent;
+  color: var(--red);
+  border: 1px solid rgba(163,48,48,0.25);
+  font-size: 12px;
+  padding: 10px;
+}
+.btn-danger:hover:not(:disabled) { background: var(--red-pale); }
+
+.gap-8 { display: flex; flex-direction: column; gap: 8px; }
+
+/* Main canvas area */
+.canvas-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 40px;
+  background: var(--cream);
+}
+.canvas-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+  text-align: center;
+}
+.canvas-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 300;
+  color: var(--ink);
+  margin-bottom: 32px;
+  text-align: center;
+}
+.canvas-title em { font-style: italic; }
+
+.reveal-stage {
+  width: 100%;
+  max-width: 560px;
+  position: relative;
+}
+.canvas-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid var(--border-strong);
+  overflow: hidden;
+  background: #111;
+  border-radius: var(--r);
+}
+#artwork {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+#grid-overlay {
+  position: absolute; inset: 0;
+  display: grid;
+}
+.tile {
+  background: rgba(15,13,11,0.9);
+  transition: opacity 0.85s cubic-bezier(0.4,0,0.2,1);
+}
+.tile.revealed { opacity: 0; pointer-events: none; }
+@keyframes unveil {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.tile.animating {
+  animation: unveil 0.85s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+
+.empty-state {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px;
+  color: rgba(255,255,255,0.35);
+  pointer-events: none;
+}
+.empty-state p { font-size: 13px; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; }
+
+.admin-badge {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: rgba(15,13,11,0.75);
+  color: rgba(255,255,255,0.6);
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  padding: 4px 8px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+/* auto-poll indicator */
+.poll-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 8px;
+}
+.poll-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--ink-soft);
+}
+.poll-dot.active { background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 32px; left: 50%;
+  transform: translateX(-50%) translateY(70px);
+  background: var(--ink);
+  color: var(--cream);
+  padding: 11px 22px;
+  border-radius: var(--r);
+  font-size: 13px;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34,1.3,0.64,1);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 999;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .admin-wrap { grid-template-columns: 1fr; }
+  .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+  .canvas-area { padding: 32px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <p class="login-eyebrow">Fundraiser Admin</p>
+    <h1>Into the Field<br><em>Donation Tracker</em></h1>
+    <div class="field">
+      <label>Admin password</label>
+      <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <p class="login-err" id="login-err"></p>
+    <button class="btn-full" onclick="doLogin()">Enter admin</button>
+  </div>
+</div>
+
+<!-- ══ ADMIN ══ -->
+<div id="admin-screen">
+  <div class="admin-wrap">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div>
+        <p class="sidebar-logo">Admin panel<span>Into the Field — Donation Tracker</span></p>
+      </div>
+
+      <!-- Stats -->
+      <div>
+        <p class="section-label">Campaign progress</p>
+        <div class="stats-grid">
+          <div class="stat-pill"><div class="val" id="s-revealed">0</div><div class="lbl">Revealed</div></div>
+          <div class="stat-pill"><div class="val" id="s-remaining">100</div><div class="lbl">Remaining</div></div>
+          <div class="stat-pill"><div class="val" id="s-total">100</div><div class="lbl">Goal</div></div>
+          <div class="stat-pill"><div class="val" id="s-pct">0%</div><div class="lbl">Complete</div></div>
+        </div>
+        <div class="prog-wrap">
+          <div class="prog-track"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+          <div class="prog-label"><span>0 donations</span><span id="goal-lbl">100 goal</span></div>
+        </div>
+      </div>
+
+      <!-- Neon DB Config -->
+      <div class="neon-config">
+        <p class="section-label">Neon database</p>
+        <p style="font-size:11px; color:var(--ink-soft); margin-bottom:10px; line-height:1.5;">
+          Connection is handled by your Vercel proxy.<br>
+          Set <code style="font-family:'DM Mono',monospace; font-size:10px; background:var(--warm); padding:1px 5px;">PROXY_URL</code> at the top of this file's script after deploying.
+        </p>
+        <div style="display:flex; gap:8px;">
+          <button class="action-btn btn-secondary" style="flex:1" onclick="testNeon()">Test connection</button>
+          <button class="action-btn btn-secondary" style="flex:1" onclick="setupNeon()">Setup tables</button>
+        </div>
+        <p class="neon-status" id="neon-status"></p>
+        <div class="poll-indicator" id="poll-indicator">
+          <div class="poll-dot" id="poll-dot"></div>
+          <span id="poll-label">Auto-poll paused</span>
+        </div>
+      </div>
+
+      <!-- Artwork upload -->
+      <div>
+        <p class="section-label">Artwork</p>
+
+        <!-- Option A: URL -->
+        <div class="field" style="margin-bottom:8px;">
+          <label>Image URL (recommended)</label>
+          <input type="text" id="image-url-input" placeholder="https://yoursite.com/wp-content/uploads/artwork.jpg" style="width:100%; padding:9px 12px; border:1px solid var(--border-strong); border-radius:var(--r); font-family:'DM Sans',sans-serif; font-size:12px; color:var(--ink); background:var(--cream); outline:none;">
+        </div>
+        <button class="action-btn btn-secondary" onclick="saveImageUrl()" style="margin-bottom:14px;">Save URL to database</button>
+
+        <!-- Divider -->
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+          <div style="flex:1; height:1px; background:var(--border);"></div>
+          <span style="font-size:10px; color:var(--ink-soft); font-family:'DM Mono',monospace; letter-spacing:0.1em;">OR UPLOAD FILE</span>
+          <div style="flex:1; height:1px; background:var(--border);"></div>
+        </div>
+
+        <!-- Option B: file upload -->
+        <label class="img-upload-area" for="img-input">
+          <img class="img-preview" id="img-preview" src="" alt="">
+          <strong id="upload-label">Upload campaign's artwork</strong>
+          <p>Click to choose a JPG, PNG or WebP.<br>Only works for small files (&lt;1MB).</p>
+          <input type="file" id="img-input" accept="image/*" onchange="handleImageUpload(this)">
+        </label>
+        <button class="action-btn btn-secondary" style="margin-top:8px;" onclick="pushImageToNeon()">Save file to database</button>
+      </div>
+
+      <!-- Goal config -->
+      <div>
+        <p class="section-label">Settings</p>
+        <div class="field">
+          <label>Donation goal</label>
+          <input type="number" id="goal-input" value="100" min="4" max="400" style="width:100%; padding:9px 12px; border:1px solid var(--border-strong); border-radius:var(--r); font-family:'DM Sans',sans-serif; font-size:13px; color:var(--ink); background:var(--cream); outline:none;">
+        </div>
+        <button class="action-btn btn-secondary" onclick="pushGoalToNeon()">Update goal in database</button>
+      </div>
+
+      <!-- Actions -->
+      <div class="gap-8">
+        <p class="section-label">Actions</p>
+        <button class="action-btn btn-record" id="btn-record" onclick="recordDonation()" disabled>
+          Record donation
+        </button>
+        <button class="action-btn btn-secondary" onclick="syncFromNeon()">Sync from database</button>
+        <button class="action-btn btn-danger" onclick="resetCampaign()">Reset campaign</button>
+      </div>
+
+    </aside>
+
+    <!-- Canvas area -->
+    <main class="canvas-area">
+      <p class="canvas-eyebrow">Live preview — admin view</p>
+      <h1 class="canvas-title">The artwork <em>unveils</em> with every gift</h1>
+
+      <div class="reveal-stage">
+        <div class="canvas-wrap">
+          <img id="artwork" src="" alt="campaign artwork" style="display:none;">
+          <div id="grid-overlay"></div>
+          <div class="empty-state" id="empty-state">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            <p>Upload artwork &amp; connect Neon to begin</p>
+          </div>
+          <div class="admin-badge">Admin</div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG — edit these defaults ──────────────────────────────────────────
+const ADMIN_PASSWORD = 'inthefield2025'; // Change this!
+const POLL_INTERVAL_MS = 8000;
+const COLS = 10;
+const ROWS = 10;
+const TOTAL_TILES = COLS * ROWS;
+
+// ── State ─────────────────────────────────────────────────────────────────
+let tiles = [];
+let tileOrder = [];
+let revealedCount = 0;
+let goalTotal = 100;
+let neonDonationCount = 0;
+let pollTimer = null;
+let imageDataUrl = null;
+let TILE_SEED = 20250101;
+
+// ── Login ─────────────────────────────────────────────────────────────────
+function doLogin() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === ADMIN_PASSWORD) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    initGrid();
+    loadLocalState();
+    startPoll();
+  } else {
+    document.getElementById('login-err').textContent = 'Incorrect password.';
+    setTimeout(() => document.getElementById('login-err').textContent = '', 2000);
+  }
+}
+document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+// ── Grid ──────────────────────────────────────────────────────────────────
+function initGrid() {
+  const grid = document.getElementById('grid-overlay');
+  grid.innerHTML = '';
+  grid.style.gridTemplateColumns = `repeat(${COLS}, 1fr)`;
+  grid.style.gridTemplateRows = `repeat(${ROWS}, 1fr)`;
+  tiles = [];
+  for (let i = 0; i < TOTAL_TILES; i++) {
+    const t = document.createElement('div');
+    t.className = 'tile';
+    grid.appendChild(t);
+    tiles.push(t);
+  }
+  tileOrder = buildTileOrder(TILE_SEED);
+}
+
+function buildTileOrder(seed) {
+  let s = seed;
+  function rand() {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return (s >>> 0) / 0x100000000;
+  }
+  const a = Array.from({ length: TOTAL_TILES }, (_, i) => i);
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function applyRevealedCount(count, animate = false) {
+  count = Math.min(count, TOTAL_TILES);
+  for (let i = 0; i < TOTAL_TILES; i++) {
+    const t = tiles[tileOrder[i]];
+    if (i < count) {
+      t.classList.remove('animating');
+      t.classList.add('revealed');
+    } else {
+      t.classList.remove('revealed', 'animating');
+    }
+  }
+  // If animate, play reveal for newly revealed tiles
+  if (animate && count > revealedCount) {
+    for (let i = revealedCount; i < count; i++) {
+      const t = tiles[tileOrder[i]];
+      t.classList.remove('revealed');
+      t.classList.add('animating');
+      const idx = i;
+      setTimeout(() => {
+        tiles[tileOrder[idx]].classList.remove('animating');
+        tiles[tileOrder[idx]].classList.add('revealed');
+      }, 850 + (i - revealedCount) * 300);
+    }
+  }
+  revealedCount = count;
+  updateStats();
+  if (count >= goalTotal) document.getElementById('btn-record').disabled = true;
+  else document.getElementById('btn-record').disabled = !isNeonConfigured();
+}
+
+function updateStats() {
+  document.getElementById('s-revealed').textContent = revealedCount;
+  document.getElementById('s-remaining').textContent = Math.max(0, goalTotal - revealedCount);
+  document.getElementById('s-total').textContent = goalTotal;
+  document.getElementById('s-pct').textContent = Math.round((revealedCount / goalTotal) * 100) + '%';
+  document.getElementById('prog-bar').style.width = Math.min(100, (revealedCount / goalTotal) * 100) + '%';
+  document.getElementById('goal-lbl').textContent = goalTotal + ' goal';
+}
+
+// ── Neon API (via Vercel proxy) ───────────────────────────────────────────
+// Calls go to YOUR Vercel proxy URL, not Neon directly (avoids CORS).
+// Set PROXY_URL to your deployed Vercel function URL after deployment.
+const PROXY_URL = 'https://project-v5dpc.vercel.app/api/neon';
+// e.g. 'https://into-the-field-proxy.vercel.app/api/neon'
+
+function isNeonConfigured() {
+  return !PROXY_URL.startsWith('YOUR_VERCEL');
+}
+
+async function neonQuery(sqlText, params = []) {
+  if (PROXY_URL.startsWith('YOUR_VERCEL')) {
+    throw new Error('Set PROXY_URL in admin.html first');
+  }
+  const res = await fetch(PROXY_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query: sqlText, params }),
+  });
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`Proxy ${res.status}: ${txt.slice(0, 200)}`);
+  }
+  return res.json();
+}
+
+async function testNeon() {
+  if (PROXY_URL.startsWith('YOUR_VERCEL')) {
+    setNeonStatus('Set PROXY_URL in admin.html first', 'err');
+    return;
+  }
+  setNeonStatus('Testing…', '');
+  try {
+    await neonQuery('SELECT 1 AS ok');
+    setNeonStatus('Connected successfully', 'ok');
+    document.getElementById('btn-record').disabled = false;
+    startPoll();
+  } catch(e) {
+    setNeonStatus('Connection failed: ' + e.message.slice(0, 80), 'err');
+  }
+}
+
+async function setupNeon() {
+  setNeonStatus('Creating tables…', '');
+  try {
+    await neonQuery(`CREATE TABLE IF NOT EXISTS fundraiser_state (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`);
+    // Insert defaults if not present
+    await neonQuery(`INSERT INTO fundraiser_state (key, value) VALUES
+      ('donation_count', '0'),
+      ('goal_total', '100'),
+      ('tile_seed', '20250101'),
+      ('image_url', '')
+      ON CONFLICT (key) DO NOTHING`);
+    setNeonStatus('Tables ready', 'ok');
+    showToast('Database tables created');
+    await syncFromNeon();
+  } catch(e) {
+    setNeonStatus('Setup failed: ' + e.message.slice(0, 80), 'err');
+  }
+}
+
+function setNeonStatus(msg, cls) {
+  const el = document.getElementById('neon-status');
+  el.textContent = msg;
+  el.className = 'neon-status ' + cls;
+}
+
+async function syncFromNeon() {
+  if (!isNeonConfigured()) return;
+  try {
+    const data = await neonQuery(`SELECT key, value FROM fundraiser_state WHERE key IN ('donation_count','goal_total','tile_seed','image_url')`);
+    const rows = data.rows || [];
+    const map = {};
+    rows.forEach(r => map[r.key] = r.value);
+
+    if (map.goal_total) {
+      goalTotal = parseInt(map.goal_total) || 100;
+      document.getElementById('goal-input').value = goalTotal;
+    }
+    if (map.tile_seed) {
+      TILE_SEED = parseInt(map.tile_seed) || 20250101;
+      tileOrder = buildTileOrder(TILE_SEED);
+    }
+    const remoteCount = parseInt(map.donation_count) || 0;
+    if (remoteCount !== revealedCount) {
+      applyRevealedCount(remoteCount, remoteCount > revealedCount);
+    }
+    if (map.image_url && map.image_url.length > 10) {
+      loadImageFromUrl(map.image_url);
+      document.getElementById('image-url-input').value = map.image_url.startsWith('http') ? map.image_url : '';
+    }
+    neonDonationCount = remoteCount;
+    saveLocalState();
+  } catch(e) {
+    console.warn('Sync error:', e);
+  }
+}
+
+async function pushCountToNeon(count) {
+  await neonQuery(`UPDATE fundraiser_state SET value = $1, updated_at = NOW() WHERE key = 'donation_count'`, [String(count)]);
+}
+
+async function pushGoalToNeon() {
+  const goal = parseInt(document.getElementById('goal-input').value) || 100;
+  goalTotal = goal;
+  try {
+    await neonQuery(`UPDATE fundraiser_state SET value = $1, updated_at = NOW() WHERE key = 'goal_total'`, [String(goal)]);
+    showToast('Goal updated to ' + goal);
+    updateStats();
+  } catch(e) { showToast('Error: ' + e.message.slice(0, 60)); }
+}
+
+async function pushImageToNeon() {
+  if (!imageDataUrl) { showToast('No image loaded yet'); return; }
+  try {
+    await neonQuery(`UPDATE fundraiser_state SET value = $1, updated_at = NOW() WHERE key = 'image_url'`, [imageDataUrl]);
+    showToast('Image saved to database');
+  } catch(e) { showToast('Image too large — use the URL option instead.'); }
+}
+
+async function saveImageUrl() {
+  const url = document.getElementById('image-url-input').value.trim();
+  if (!url || !url.startsWith('http')) { showToast('Please enter a valid image URL'); return; }
+  try {
+    await neonQuery(`UPDATE fundraiser_state SET value = $1, updated_at = NOW() WHERE key = 'image_url'`, [url]);
+    loadImageFromUrl(url);
+    showToast('Image URL saved — public page will update within a few seconds');
+  } catch(e) { showToast('Error saving URL: ' + e.message.slice(0, 60)); }
+}
+
+// ── Polling ───────────────────────────────────────────────────────────────
+function startPoll() {
+  if (pollTimer) return;
+  if (!isNeonConfigured()) return;
+  pollTimer = setInterval(pollNeon, POLL_INTERVAL_MS);
+  document.getElementById('poll-dot').classList.add('active');
+  document.getElementById('poll-label').textContent = `Auto-polling every ${POLL_INTERVAL_MS/1000}s`;
+}
+
+async function pollNeon() {
+  if (!isNeonConfigured()) return;
+  try {
+    const data = await neonQuery(`SELECT value FROM fundraiser_state WHERE key = 'donation_count'`);
+    const remote = parseInt((data.rows[0] || {}).value) || 0;
+    if (remote > revealedCount) {
+      applyRevealedCount(remote, true);
+      neonDonationCount = remote;
+      saveLocalState();
+      showToast(`${remote - revealedCount > 0 ? '+' + (remote - revealedCount) : ''} new donation${remote - revealedCount !== 1 ? 's' : ''} detected!`);
+    }
+  } catch(e) {}
+}
+
+// ── Record donation manually ───────────────────────────────────────────────
+async function recordDonation() {
+  if (revealedCount >= goalTotal) { showToast('Goal already reached!'); return; }
+  const newCount = revealedCount + 1;
+  applyRevealedCount(newCount, true);
+  if (isNeonConfigured()) {
+    try {
+      await pushCountToNeon(newCount);
+      saveLocalState();
+      showToast('Donation recorded — 1 tile revealed');
+    } catch(e) {
+      showToast('Recorded locally — DB sync failed');
+    }
+  } else {
+    saveLocalState();
+    showToast('Recorded locally (no DB connected)');
+  }
+}
+
+// ── Image ─────────────────────────────────────────────────────────────────
+function handleImageUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    imageDataUrl = e.target.result;
+    loadImageFromUrl(imageDataUrl);
+    document.getElementById('upload-label').textContent = 'Image loaded ✓';
+    const preview = document.getElementById('img-preview');
+    preview.src = imageDataUrl;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function loadImageFromUrl(src) {
+  const img = document.getElementById('artwork');
+  img.src = src;
+  img.style.display = 'block';
+  document.getElementById('empty-state').style.display = 'none';
+  imageDataUrl = src;
+  document.getElementById('img-preview').src = src;
+  document.getElementById('img-preview').style.display = 'block';
+  document.getElementById('upload-label').textContent = 'Image loaded ✓';
+}
+
+// ── Reset ─────────────────────────────────────────────────────────────────
+async function resetCampaign() {
+  if (!confirm('Reset the entire campaign? This cannot be undone.')) return;
+  applyRevealedCount(0, false);
+  if (isNeonConfigured()) {
+    try {
+      await neonQuery(`UPDATE fundraiser_state SET value = '0', updated_at = NOW() WHERE key = 'donation_count'`);
+      showToast('Campaign reset');
+    } catch(e) { showToast('Local reset done; DB sync failed'); }
+  }
+  localStorage.removeItem('itf_admin_state');
+}
+
+// ── Local state ───────────────────────────────────────────────────────────
+function saveLocalState() {
+  try {
+    localStorage.setItem('itf_admin_state', JSON.stringify({
+      revealedCount, goalTotal, TILE_SEED, imageDataUrl,
+    }));
+  } catch(e) {}
+}
+
+function loadLocalState() {
+  try {
+    const raw = localStorage.getItem('itf_admin_state');
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (s.goalTotal) { goalTotal = s.goalTotal; document.getElementById('goal-input').value = goalTotal; }
+    if (s.TILE_SEED) { TILE_SEED = s.TILE_SEED; tileOrder = buildTileOrder(TILE_SEED); }
+    if (s.imageDataUrl) loadImageFromUrl(s.imageDataUrl);
+    if (s.revealedCount) applyRevealedCount(s.revealedCount, false);
+    if (!PROXY_URL.startsWith('YOUR_VERCEL')) {
+      document.getElementById('btn-record').disabled = false;
+      startPoll();
+    }
+  } catch(e) {}
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
