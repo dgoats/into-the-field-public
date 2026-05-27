@@ -244,39 +244,25 @@ main {
 }
 
 /* Complete overlay */
-.complete-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(15,13,11,0.0);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 1.5s ease;
-}
-.complete-overlay.show {
-  opacity: 1;
-  pointer-events: auto;
-  background: rgba(15,13,11,0.55);
-}
-.complete-card {
-  background: var(--cream);
+.complete-banner {
+  display: none;
+  width: 100%;
+  padding: 18px 24px;
+  background: var(--gold-faint);
   border: 1px solid var(--gold-pale);
-  padding: 32px 40px;
   text-align: center;
-  max-width: 320px;
+  margin-bottom: 20px;
 }
-.complete-card h2 {
+.complete-banner.show { display: block; }
+.complete-banner h2 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 400;
   font-style: italic;
-  color: var(--gold);
-  margin-bottom: 8px;
+  color: var(--gold-dark, #8B6914);
+  margin-bottom: 6px;
 }
-.complete-card p {
+.complete-banner p {
   font-size: 13px;
   color: var(--ink-soft);
   font-weight: 300;
@@ -303,7 +289,6 @@ main {
 }
 .artist-name {
   font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
   font-size: 14px;
   white-space: nowrap;
 }
@@ -410,21 +395,19 @@ footer {
   </div>
 
   <div class="reveal-stage">
+    <div class="complete-banner" id="complete-banner">
+      <h2>Fully revealed</h2>
+      <p>100 donations reached! Thank you to all of our supporters.</p>
+    </div>
     <div class="canvas-wrap">
       <img id="artwork" src="" alt="campaign artwork" style="display:none;">
       <div class="obscured-grid" id="obscured-grid">
         <!-- fallback cells rendered by JS -->
       </div>
       <div id="grid-overlay"></div>
-      <div class="complete-overlay" id="complete-overlay">
-        <div class="complete-card">
-          <h2>Fully revealed</h2>
-          <p>100 donations reached! Thank you to all of our supporters.</p>
-        </div>
-      </div>
     </div>
     <div class="artist-credit">
-      <span class="artist-name">Into the Field</span>
+      <span class="artist-name">Frida Foberg, <em>Into the Field</em>, 2022</span>
     </div>
   </div>
 </main>
@@ -541,7 +524,7 @@ function updateUI(count, newReveal) {
   document.getElementById('footer-count').textContent = `${count} / ${goalTotal}`;
 
   if (count >= goalTotal) {
-    document.getElementById('complete-overlay').classList.add('show');
+    document.getElementById('complete-banner').classList.add('show');
   }
   if (newReveal) showFlash(count);
 }
