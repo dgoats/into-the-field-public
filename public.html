@@ -233,8 +233,8 @@ main {
 .obscured-grid {
   position: absolute; inset: 0;
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  grid-template-rows: repeat(12, 1fr);
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
   gap: 1px;
   background: #1a1612;
   pointer-events: none;
@@ -303,10 +303,10 @@ main {
 }
 .artist-name {
   font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
   font-size: 14px;
   white-space: nowrap;
 }
-.artist-name em { font-style: italic; }
 
 /* ── Footer ── */
 footer {
@@ -391,7 +391,7 @@ footer {
 <main>
   <div class="intro">
     <p class="eyebrow">Live campaign tracker</p>
-    <h1>Each donation<br><em>unveils</em> the art</h1>
+    <h1>Every donation<br><em>unveils</em> the art</h1>
     <p>Help us reach 100 donations and expose this image from our 2022 Field Station. Each donation reveals a new piece of the hidden image. At the end of our mid-year campaign, all donors will receive a postcard print.</p>
   </div>
 
@@ -424,7 +424,7 @@ footer {
       </div>
     </div>
     <div class="artist-credit">
-      <span class="artist-name">Frida Foberg, <em>Into the Field</em>, 2022</span>
+      <span class="artist-name">Into the Field</span>
     </div>
   </div>
 </main>
@@ -453,7 +453,7 @@ const DONATE_URL = 'https://wrightingraham.app.neoncrm.com/forms/donate';   // R
 const POLL_MS    = 6000;  // Poll every 6 seconds
 // ══════════════════════════════════════════════════════════════════
 
-const COLS = 8, ROWS = 12, TOTAL_TILES = 96;
+const COLS = 10, ROWS = 10, TOTAL_TILES = 100;
 let tiles = [], tileOrder = [], revealedCount = 0, goalTotal = 100;
 let TILE_SEED = 20250101;
 let firstLoad = true;
