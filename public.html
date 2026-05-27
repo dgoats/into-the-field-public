@@ -603,6 +603,14 @@ fetchState();
 setInterval(fetchState, POLL_MS);
 
 // ── Auto-height for iFrame embedding ─────────────────────────────
+function sendHeight() {
+  const height = document.documentElement.scrollHeight + 40;
+  window.parent.postMessage({ iframeHeight: height }, '*');
+}
+sendHeight();
+new ResizeObserver(sendHeight).observe(document.body);
+
+// ── Auto-height for iFrame embedding ─────────────────────────────
 // Sends page height to parent window so the iframe resizes automatically
 
 </script>
