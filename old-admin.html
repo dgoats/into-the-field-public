@@ -582,8 +582,7 @@ function doLogin() {
     initGrid();
     loadLocalState();
     startPoll();
-    // Delay sync slightly to ensure page is fully rendered first
-    setTimeout(() => syncFromNeon(), 400);
+    syncFromNeon();
   } else {
     document.getElementById('login-err').textContent = 'Incorrect password.';
     setTimeout(() => document.getElementById('login-err').textContent = '', 2000);
@@ -731,7 +730,7 @@ function setNeonStatus(msg, cls) {
   el.className = 'neon-status ' + cls;
 }
 
-async function syncFromNeon(retryCount = 0) {
+async function syncFromNeon() {
   if (!isNeonConfigured()) return;
   try {
     const data = await neonQuery(`SELECT key, value FROM fundraiser_state WHERE key IN ('donation_count','goal_total','tile_seed','image_url')`);
@@ -754,20 +753,16 @@ async function syncFromNeon(retryCount = 0) {
     if (map.image_url && map.image_url.length > 10) {
       loadImageFromUrl(map.image_url);
       const isUrl = map.image_url.startsWith('http');
-      const urlInput = document.getElementById('image-url-input');
-      const urlBox   = document.getElementById('current-url-box');
-      const urlText  = document.getElementById('current-url-text');
-      if (urlInput) urlInput.value = isUrl ? map.image_url : '';
-      if (isUrl && urlBox)  urlBox.style.display = 'block';
-      if (isUrl && urlText) urlText.textContent = map.image_url;
+      document.getElementById('image-url-input').value = isUrl ? map.image_url : '';
+      if (isUrl) {
+        document.getElementById('current-url-text').textContent = map.image_url;
+        document.getElementById('current-url-box').style.display = 'block';
+      }
     }
     neonDonationCount = remoteCount;
     saveLocalState();
   } catch(e) {
-    // Silently retry once after 2 seconds, then give up
-    if (retryCount === 0) {
-      setTimeout(() => syncFromNeon(1), 2000);
-    }
+    console.warn('Sync error:', e);
   }
 }
 
