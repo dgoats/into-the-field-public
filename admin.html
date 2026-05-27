@@ -527,6 +527,15 @@ body {
         <button class="action-btn btn-record" id="btn-record" onclick="recordDonation()" disabled>
           Record donation
         </button>
+
+        <!-- Manual count override -->
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="number" id="manual-count" min="0" max="100" placeholder="e.g. 42"
+            style="flex:1; padding:10px 12px; border:1px solid var(--border-strong); border-radius:var(--r); font-family:'DM Sans',sans-serif; font-size:13px; color:var(--ink); background:var(--cream); outline:none;">
+          <button class="action-btn btn-secondary" style="flex:1; white-space:nowrap;" onclick="setManualCount()">Set count</button>
+        </div>
+        <p style="font-size:10px; color:var(--ink-soft); margin-top:-4px; font-family:'DM Mono',monospace; letter-spacing:0.06em;">MANUAL COUNT OVERRIDE</p>
+
         <button class="action-btn btn-secondary" onclick="syncFromNeon()">Sync from database</button>
         <button class="action-btn btn-danger" onclick="resetCampaign()">Reset campaign</button>
       </div>
@@ -536,7 +545,7 @@ body {
     <!-- Canvas area -->
     <main class="canvas-area">
       <p class="canvas-eyebrow">Live preview — admin view</p>
-      <h1 class="canvas-title">The artwork <em>is revealed</em> with every gift</h1>
+      <h1 class="canvas-title">The artwork <em>unveils</em> with every gift</h1>
 
       <div class="reveal-stage">
         <div class="canvas-wrap">
@@ -820,6 +829,26 @@ async function pollNeon() {
       showToast(`${remote - revealedCount > 0 ? '+' + (remote - revealedCount) : ''} new donation${remote - revealedCount !== 1 ? 's' : ''} detected!`);
     }
   } catch(e) {}
+}
+
+// ── Manual count override ─────────────────────────────────────────────────
+async function setManualCount() {
+  const input = document.getElementById('manual-count');
+  const count = parseInt(input.value);
+  if (isNaN(count) || count < 0 || count > goalTotal) {
+    showToast(`Please enter a number between 0 and ${goalTotal}`);
+    return;
+  }
+  if (!confirm(`Set donation count to ${count}? This will update the database.`)) return;
+  try {
+    await pushCountToNeon(count);
+    applyRevealedCount(count, count > revealedCount);
+    saveLocalState();
+    input.value = '';
+    showToast(`Donation count set to ${count}`);
+  } catch(e) {
+    showToast('Error updating count: ' + e.message.slice(0, 60));
+  }
 }
 
 // ── Record donation manually ───────────────────────────────────────────────
